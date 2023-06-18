@@ -45,7 +45,8 @@ random_emoji=get_random_item(emoji_icons)[1]
 
 
 # Function to capture and display real-time video
-def capture_and_display():
+def capture_and_display(random_emoji):
+    count=0
     # Open the video capture
     cap = cv2.VideoCapture(0)  # Change the index if you have multiple cameras
     width, height = 750, 400  # Adjust these values to suit your needs
@@ -92,8 +93,11 @@ def capture_and_display():
                 # Display the emotion text near the face
                 cv2.putText(frame, f" {emotion_labels[emotion]}", (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.9,
                             (0, 255, 0), 2)
-                #cv2.putText(frame, f" this is the count", (30,  30), cv2.FONT_HERSHEY_SIMPLEX, 0.9,
-                #            (0, 255, 0), 2)
+                if random_emoji==emoji_icon:
+                    count+=1
+                    random_emoji=get_random_item(emoji_icons)[1]
+                cv2.putText(frame, " emotion mimicked:-"+f" {count}", (30,  30), cv2.FONT_HERSHEY_SIMPLEX, 0.9,
+                            (0, 255, 0), 2)
                 
             
         
@@ -106,6 +110,13 @@ def capture_and_display():
         pil_image = Image.fromarray(image)               #the comented 3 lines are commented from
         draw = ImageDraw.Draw(pil_image)                 #
         
+        """this is for random emotion generated window"""
+       
+        emoji_text = emoji.emojize(random_emoji*3)
+        emoji_font = ImageFont.truetype(font_path, font_size)
+        draw.text((x, y), emoji_text, font=emoji_font, fill=(255, 255, 255))
+        image_rr = np.array(pil_image)
+        cv2.imshow("RandomEmoji ", image_rr)
         
         """to capture the emoji in to the screen"""
         emoji_text = emoji.emojize(emoji_icon*3)  
@@ -126,7 +137,7 @@ def capture_and_display():
     cv2.destroyAllWindows()
 
 # Create and start the thread
-thread = threading.Thread(target=capture_and_display)
+thread = threading.Thread(target=capture_and_display(random_emoji))
 thread.start()
 
 # Wait for the thread to finish
